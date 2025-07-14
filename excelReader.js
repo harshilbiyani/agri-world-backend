@@ -1,21 +1,19 @@
-const xlsx = require('xlsx');
-const workbook = xlsx.readFile('data.xlsx');
-const sheetName = workbook.SheetNames[0];
-const sheet = workbook.Sheets[sheetName];
-const jsonData = xlsx.utils.sheet_to_json(sheet, { defval: '' });
+const XLSX = require("xlsx");
+const fs = require("fs");
 
-let lastDistrict = '';
-let lastBlock = '';
+function readLocationsFromExcel() {
+  const workbook = XLSX.readFile("locations.xlsx"); // replace with correct filename
+  const sheetName = workbook.SheetNames[0];
+  const sheet = workbook.Sheets[sheetName];
+  const data = XLSX.utils.sheet_to_json(sheet);
 
-const locations = jsonData.map(row => {
-  if (row.District) lastDistrict = row.District;
-  if (row.Block) lastBlock = row.Block;
+  // Clean and format
+  return data.map((row) => ({
+    district: row.District || "",
+    block: row.Block || "",
+    village: row.Village || ""
+  }));
+}
 
-  return {
-    district: lastDistrict || 'undefined',
-    block: lastBlock || 'undefined',
-    village: row.Village || 'undefined'
-  };
-});
+module.exports = readLocationsFromExcel;
 
-module.exports = locations;
